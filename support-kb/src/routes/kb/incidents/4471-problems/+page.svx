@@ -1,0 +1,81 @@
+---
+layout: runbook
+title: '#4471 · three problems, not one'
+owner: support desk
+status: proposed
+reviewed: 2026-11-01
+signature: Jakub Burkiewicz
+---
+
+<script>
+  import ProblemTable from '#lib/kb/ProblemTable.svelte';
+  import CauseTable from '#lib/kb/CauseTable.svelte';
+  import Callout from '#lib/kb/Callout.svelte';
+  import RenderStamp from '#lib/kb/RenderStamp.svelte';
+</script>
+
+[#4471](/kb/incidents/4471) says one issue: the parser reads dates month first. That explains most
+of its reports. It does not explain all of them. Read by tenant and by what the reporter wrote, the
+ticket holds three different problems with three different fixes.
+
+<Callout kind="warn">
+Not "known, one fix queued". The queued parser fix closes one of the three. The other two keep
+producing reports after it ships.
+</Callout>
+
+## What is in the ticket
+
+<ProblemTable ticket={4471} />
+
+The export comes in overlapping pages, so the same report can appear twice. Every count here is by
+report id, once.
+
+### `parser`: the shared parser reads month first
+
+Ticket: [issue 1](https://github.com/jakubburkiewicz/what-it-shows/issues/1).
+
+A tenant whose locale writes the day first (asked of the platform, not a list) gets its dates
+flipped: 7 April comes out as 4 July. Reports reach the desk by app, by email and by form. This is
+the problem #4471 describes.
+
+### `hint`: booking-v3 tells day-first people to type month first
+
+Ticket: [issue 2](https://github.com/jakubburkiewicz/what-it-shows/issues/2).
+
+booking-v3 prints `MM/DD/YYYY` under the date field. Day-first tenants on that form type what the
+hint says, and the form then reads it their way. Only form reports from those tenants. The parser
+fix does not touch this: the parser is right here, the hint is wrong.
+
+### `one-day`: a date moved by exactly one day
+
+Ticket: [issue 3](https://github.com/jakubburkiewicz/what-it-shows/issues/3).
+
+The desk notes mark these reports as a one-day move. Nothing is swapped: "Tuesday 12 May" arrives as
+"Monday 11 May"; one client in Lisbon got Tuesday and the same meeting in Toronto got Monday; one
+invite arrived before the booking was made. Month-and-day swapping cannot produce that. The cause is
+not established from these reports. A time zone or day boundary problem fits what they describe;
+engineering has to confirm it.
+
+These reports were filed under `parser` or `hint` by tenant. They leave that count here, because a
+fix for the swap does not help them.
+
+## Why one ticket looked right
+
+[Decision 0001](/kb/decisions/0001-dedupe-by-subject) merges on the subject line, and the subjects
+here are generic ("Date is wrong", "Wrong day on the invite"). Intake's browser guess (the
+`tagged as` column below) does not separate the problems either: it disagrees with the
+tenant-based cause in both groups.
+
+<CauseTable ticket={4471} />
+
+The `hint` row is the one the old page flagged as "not this ticket". This table counts two causes
+and files the one-day reports inside them; the table at the top of this page takes them out.
+
+## What to do
+
+- File and fix the three problems separately. One ticket each, each with its own count (see the table).
+- Merge on cause, not on subject: tenant locale, booking form and channel
+  ([triage: duplicate reports](/kb/triage/dedupe) shows the check).
+- Write a new decision record that replaces 0001. An accepted decision is never edited.
+
+<RenderStamp {signature} />
