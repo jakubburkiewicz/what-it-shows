@@ -1,15 +1,17 @@
-// The problems inside one merged ticket, counted once each.
-// causes.ts decides parser vs hint from the tenant (never from intake's guess). The desk notes
-// (desk-notes.json) name reports that describe a different symptom: a date moved by one day,
-// not a month and day swapped. Those are their own problem, so they leave the cause they were filed under.
-import { causeOf, uniqueById, type Cause, type Report, type Tenant } from '#lib/kb/causes';
+// The problems inside one merged ticket, counted the way the desk counts them.
+// causes.ts decides parser vs hint from the tenant (never from intake's guess) and the desk counts
+// a report where it is filed. The desk notes (desk-notes.json) name reports that describe a different
+// symptom: a date moved by one day, not a month and day swapped. That is a problem of its own; its
+// reports stay counted under the cause they are filed under, and are counted again here.
+import { causeOf, uniqueById, type Report, type Tenant } from '#lib/kb/causes';
 
-export type Problem = Cause | 'one-day' | 'unplaced';
+export type Problem = 'parser' | 'hint' | 'one-day' | 'unplaced';
 export const PROBLEMS: readonly Problem[] = ['parser', 'hint', 'one-day', 'unplaced'];
 
-export function problemOf(r: Report, t: Tenant | undefined, oneDay: readonly string[]): Problem {
-  if (oneDay.includes(r.id)) return 'one-day';
-  return causeOf(r, t) ?? 'unplaced';
+// The problems a report belongs to: its cause, plus `one-day` when the desk notes read it that way.
+export function problemsOf(r: Report, t: Tenant | undefined, oneDay: readonly string[]): Problem[] {
+  const own: Problem[] = [causeOf(r, t) ?? 'unplaced'];
+  return oneDay.includes(r.id) ? [...own, 'one-day'] : own;
 }
 
 export type ProblemGroup = {
@@ -29,7 +31,7 @@ export function problemsIn(
 ): { merged: number; groups: ProblemGroup[] } {
   const merged = uniqueById(reports).filter((r) => r.mergedInto === ticket);
   const groups = PROBLEMS.flatMap((problem) => {
-    const rs = merged.filter((r) => problemOf(r, tenantOf(r), oneDay) === problem);
+    const rs = merged.filter((r) => problemsOf(r, tenantOf(r), oneDay).includes(problem));
     if (rs.length === 0) return [];
     const days = rs.map((r) => r.receivedAt.slice(0, 10)).sort();
     return [

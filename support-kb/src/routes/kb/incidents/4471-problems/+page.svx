@@ -56,8 +56,8 @@ invite arrived before the booking was made. Month-and-day swapping cannot produc
 not established from these reports. A time zone or day boundary problem fits what they describe;
 engineering has to confirm it.
 
-These reports were filed under `parser` or `hint` by tenant. They leave that count here, because a
-fix for the swap does not help them.
+The desk files these reports under `parser` or `hint` by tenant, and counts them there. They are
+counted again under `one-day`, because a fix for the swap does not help them.
 
 ## Why one ticket looked right
 
@@ -69,7 +69,7 @@ tenant-based cause in both groups.
 <CauseTable ticket={4471} />
 
 The `hint` row is the one the old page flagged as "not this ticket". This table counts two causes
-and files the one-day reports inside them; the table at the top of this page takes them out.
+and files the one-day reports inside them, as the desk does.
 
 ## What to do
 

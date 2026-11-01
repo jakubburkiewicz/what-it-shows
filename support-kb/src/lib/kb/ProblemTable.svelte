@@ -18,7 +18,6 @@
 <p class="sum">
   <strong>{result.merged}</strong> reports in #{ticket}, counted once each ·
   <strong>{result.groups.length}</strong> problems
-  ({result.groups.map((g) => g.reports.length).join(' + ')})
 </p>
 
 <table>
@@ -38,7 +37,15 @@
   </tbody>
 </table>
 
+{#each result.groups.filter((g) => g.problem === 'one-day') as g (g.problem)}
+  <p class="note">
+    The {g.reports.length} <code>one-day</code> reports are also filed under the cause their tenant gives them,
+    so they are counted in that row too. The desk counts a report where it is filed.
+  </p>
+{/each}
+
 <style>
   .sum { font-size: 1.1rem; }
+  .note { color: var(--muted); font-size: 0.85em; }
   .ch { color: var(--muted); font-size: 0.85em; }
 </style>

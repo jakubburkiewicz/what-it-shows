@@ -4,11 +4,11 @@ Support ticket #4471 merged 412 date reports into one issue. Read by tenant and 
 
 | Problem | Reports | Ticket |
 |---|---|---|
-| `parser`: shared parser reads dates month first | 374 | [#1](../../issues/1) |
+| `parser`: shared parser reads dates month first | 379 | [#1](../../issues/1) |
 | `hint`: booking-v3 prints `MM/DD/YYYY` for day-first tenants | 33 | [#2](../../issues/2) |
 | `one-day`: date moved by exactly one day, cause unknown | 5 | [#3](../../issues/3) |
 
-374 + 33 + 5 = 412. Counts are by unique report id: the export repeats 15 reports (427 rows).
+Counts are the desk's own: by unique report id (the export repeats 15 reports, 427 rows), each report counted where the desk files it. The 412 reports split 379 `parser` + 33 `hint`. The 5 `one-day` reports are filed under `parser` by tenant, so they are also in its 379.
 
 ## Files
 
